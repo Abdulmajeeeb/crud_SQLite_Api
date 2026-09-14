@@ -13,14 +13,13 @@ const createUser = async (request, response) => {
         // Parse the request body into a JavaScript object.
         const newUser = JSON.parse(body);
 
-        newUser.firstName= String(newUser.firstName).replace(/;/g,"");
-        newUser.lastName= String(newUser.lastName).replace(/;/g,"");
+        newUser.firstName = String(newUser.firstName);
+        newUser.lastName = String(newUser.lastName);
 
-
-        // Append the new user record to the data file.
+        // Insert the new user into the database.
         await db.run(
             `INSERT INTO users (firstName, lastName, age)
-            VALUES (?,?,?)`,
+            VALUES (?, ?, ?)`,
             newUser.firstName,
             newUser.lastName,
             newUser.age
@@ -30,6 +29,7 @@ const createUser = async (request, response) => {
         response.writeHead(201, {
             "Content-Type": "application/json"
         })
+
         response.end(JSON.stringify({
             message: 'user created successfully'
         }))

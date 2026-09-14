@@ -1,7 +1,6 @@
-import db from '../db.js'
+import db from '../db.js';
 
 const updateUser = async (request, response) => {
-
 
     // Extract the user ID from the request URL.
     const id = request.url.split('/')[2];
@@ -16,23 +15,32 @@ const updateUser = async (request, response) => {
 
         // Parse the request body into a JavaScript object.
         const receivedData = JSON.parse(body);
+
+        // Retrieve the existing user from the database.
         const user = await db.get(
-            'SELECT * FROM users WHERE id=?',
+            'SELECT * FROM users WHERE id = ?',
             id
         );
+
+        // Return a 404 response if the user does not exist.
         if (user === undefined) {
             response.writeHead(404, {
                 "Content-Type": "application/json"
             });
+
             response.end(JSON.stringify({
                 message: 'user not found'
             }));
+
             return;
         }
-        const firstName = receivedData.firstName?.replaceAll(';', '') ?? user.firstName;
-        const lastName = receivedData.lastName?.replaceAll(';', '') ?? user.lastName;
+
+        // Use the new value when provided; otherwise retain the existing value.
+        const firstName = receivedData.firstName ?? user.firstName;
+        const lastName = receivedData.lastName ?? user.lastName;
         const age = receivedData.age ?? user.age;
 
+        // Update the user's information in the database.
         await db.run(
             `UPDATE users
             SET firstName = ?, lastName = ?, age = ?
@@ -47,6 +55,7 @@ const updateUser = async (request, response) => {
         response.writeHead(200, {
             "Content-Type": "application/json"
         })
+
         response.end(JSON.stringify({
             message: 'user updated successfully'
         }))

@@ -1,7 +1,7 @@
 // Import Node's built-in HTTP module.
 import http from 'node:http';
 
-// Import route handlers for each API operation.
+// Import route handlers for each CRUD operation.
 import route_404 from './routes/_404.js';
 import getUser from './routes/user.js';
 import getAllUsers from './routes/allUsers.js';
@@ -16,18 +16,17 @@ const crudServer = http.createServer(async function (request, response) {
     response.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,PATCH,DELETE');
     response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-
     const url = request.url;
 
     // Route requests based on the requested URL.
     switch (url) {
 
-        // Retrieve all users.
+        // Retrieve all users from the database.
         case '/users':
             await getAllUsers(request, response);
             break;
 
-        // Create a new user.
+        // Create a new user in the database.
         case '/user':
             if (request.method === 'POST') {
                 await createUser(request, response);
@@ -38,19 +37,19 @@ const crudServer = http.createServer(async function (request, response) {
         default:
             if (url.startsWith('/user/')) {
 
-                // Retrieve a user by ID.
+                // Retrieve a user by ID from the database.
                 if (request.method === "GET") {
                     await getUser(request, response);
                     break;
                 }
 
-                // Update an existing user by ID.
+                // Update an existing user in the database.
                 if (request.method === "PATCH") {
                     await updateUser(request, response);
                     break;
                 }
 
-                // Delete an existing user by ID.
+                // Delete an existing user from the database.
                 if (request.method === "DELETE") {
                     await deleteUser(request, response);
                     break;
@@ -63,6 +62,7 @@ const crudServer = http.createServer(async function (request, response) {
             }
             break;
     }
+
     return;
 })
 
